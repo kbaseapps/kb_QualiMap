@@ -1,0 +1,40 @@
+#
+# Define basic display information
+#
+name     : Run QualiMap v2.2.1 to assess Reads Alignment Quality
+tooltip  : |
+    Display QC information about a Reads Alignment or set of Reads Alignments
+
+screenshots :
+    []
+
+icon: null
+
+#
+# Define the set of other narrative methods that should be suggested to the user.
+#
+method-suggestions :
+    related :
+        []
+    next :
+        []
+
+
+#
+# Configure the display and description of the parameters
+#
+parameters :
+    input_ref :
+        ui-name : |
+            ReadsAlignment or ReadsAlignmentSet
+        short-hint : |
+            Select the ReadsAlignment or Set to perform the QC analysis on
+
+description : |
+    <p>This App runs QualiMap 2 to produce QC metrics and plots for your ReadsAlignment data.</p>
+
+publications :
+    -
+        display-text: |
+            Konstantin Okonechnikov, Ana Conesa and Fernando García-Alcalde "Qualimap 2: advanced multi-sample quality control for high-throughput sequencing data." Bioinformatics (2015)
+        link: https://www.ncbi.nlm.nih.gov/pubmed/26428292
