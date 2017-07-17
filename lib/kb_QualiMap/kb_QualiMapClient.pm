@@ -124,6 +124,7 @@ $result is a kb_QualiMap.RunBamQCResult
 RunBamQCParams is a reference to a hash where the following keys are defined:
 	input_ref has a value which is a string
 	create_report has a value which is a kb_QualiMap.bool
+	output_workspace has a value which is a string
 bool is an int
 RunBamQCResult is a reference to a hash where the following keys are defined:
 	report_ref has a value which is a string
@@ -147,6 +148,7 @@ $result is a kb_QualiMap.RunBamQCResult
 RunBamQCParams is a reference to a hash where the following keys are defined:
 	input_ref has a value which is a string
 	create_report has a value which is a kb_QualiMap.bool
+	output_workspace has a value which is a string
 bool is an int
 RunBamQCResult is a reference to a hash where the following keys are defined:
 	report_ref has a value which is a string
@@ -355,6 +357,7 @@ suitable for a report.
 a reference to a hash where the following keys are defined:
 input_ref has a value which is a string
 create_report has a value which is a kb_QualiMap.bool
+output_workspace has a value which is a string
 
 </pre>
 
@@ -365,6 +368,7 @@ create_report has a value which is a kb_QualiMap.bool
 a reference to a hash where the following keys are defined:
 input_ref has a value which is a string
 create_report has a value which is a kb_QualiMap.bool
+output_workspace has a value which is a string
 
 
 =end text

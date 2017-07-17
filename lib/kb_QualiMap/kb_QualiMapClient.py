@@ -42,7 +42,7 @@ class kb_QualiMap(object):
            report. Either way you'll be provided with a qc_result_folder_path
            with an index.html file suitable for a report.) -> structure:
            parameter "input_ref" of String, parameter "create_report" of type
-           "bool"
+           "bool", parameter "output_workspace" of String
         :returns: instance of type "RunBamQCResult" -> structure: parameter
            "report_ref" of String, parameter "report_name" of String,
            parameter "qc_result_folder_path" of String, parameter

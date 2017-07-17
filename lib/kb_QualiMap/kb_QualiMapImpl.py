@@ -11,7 +11,7 @@ class kb_QualiMap:
     kb_QualiMap
 
     Module Description:
-
+    
     '''
 
     ######## WARNING FOR GEVENT USERS ####### noqa
@@ -20,9 +20,9 @@ class kb_QualiMap:
     # state. A method could easily clobber the state set by another while
     # the latter method is running.
     ######################################### noqa
-    VERSION = "0.0.1"
-    GIT_URL = ""
-    GIT_COMMIT_HASH = "HEAD"
+    VERSION = "1.0.0"
+    GIT_URL = "git@github.com:kbaseapps/kb_QualiMap"
+    GIT_COMMIT_HASH = "0f3c1734eca65e0f494621882f6eae6e6f66085c"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -48,7 +48,7 @@ class kb_QualiMap:
            report. Either way you'll be provided with a qc_result_folder_path
            with an index.html file suitable for a report.) -> structure:
            parameter "input_ref" of String, parameter "create_report" of type
-           "bool"
+           "bool", parameter "output_workspace" of String
         :returns: instance of type "RunBamQCResult" -> structure: parameter
            "report_ref" of String, parameter "report_name" of String,
            parameter "qc_result_folder_path" of String, parameter

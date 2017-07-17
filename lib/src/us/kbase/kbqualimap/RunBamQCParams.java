@@ -27,7 +27,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
     "input_ref",
-    "create_report"
+    "create_report",
+    "output_workspace"
 })
 public class RunBamQCParams {
 
@@ -35,6 +36,8 @@ public class RunBamQCParams {
     private String inputRef;
     @JsonProperty("create_report")
     private Long createReport;
+    @JsonProperty("output_workspace")
+    private String outputWorkspace;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("input_ref")
@@ -67,6 +70,21 @@ public class RunBamQCParams {
         return this;
     }
 
+    @JsonProperty("output_workspace")
+    public String getOutputWorkspace() {
+        return outputWorkspace;
+    }
+
+    @JsonProperty("output_workspace")
+    public void setOutputWorkspace(String outputWorkspace) {
+        this.outputWorkspace = outputWorkspace;
+    }
+
+    public RunBamQCParams withOutputWorkspace(String outputWorkspace) {
+        this.outputWorkspace = outputWorkspace;
+        return this;
+    }
+
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -79,7 +97,7 @@ public class RunBamQCParams {
 
     @Override
     public String toString() {
-        return ((((((("RunBamQCParams"+" [inputRef=")+ inputRef)+", createReport=")+ createReport)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((("RunBamQCParams"+" [inputRef=")+ inputRef)+", createReport=")+ createReport)+", outputWorkspace=")+ outputWorkspace)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }
