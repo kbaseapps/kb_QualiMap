@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import unittest
-import os  # noqa: F401
-import json  # noqa: F401
+import os
 import shutil
+import time
 
 from os import environ
 try:
@@ -62,34 +62,20 @@ class kb_QualiMapTest(unittest.TestCase):
         cls.ru = ReadsUtils(cls.callback_url)
         cls.rau = ReadsAlignmentUtils(cls.callback_url)
 
-        cls.wsName = "test_kb_qualimap_1500067318972"
-
-        #suffix = int(time.time() * 1000)
-        #cls.wsName = "test_kb_qualimap_" + str(suffix)
-        #cls.ws.create_workspace({'workspace': cls.wsName})
+        suffix = int(time.time() * 1000)
+        cls.wsName = "test_kb_qualimap_" + str(suffix)
+        cls.ws.create_workspace({'workspace': cls.wsName})
 
         cls.prepare_data()
 
     @classmethod
     def tearDownClass(cls):
         if hasattr(cls, 'wsName'):
-            pass
-            #cls.ws.delete_workspace({'workspace': cls.wsName})
-            #print('Test workspace was deleted')
+            cls.ws.delete_workspace({'workspace': cls.wsName})
+            print('Test workspace ' + cls.wsName + ' was deleted')
 
     @classmethod
     def prepare_data(cls):
-
-        cls.genome_ref = '23970/2/1'
-        cls.reads_ref_1 = '23970/4/1'
-        cls.reads_ref_2 = '23970/5/1'
-        cls.alignment_ref_1 = '23970/6/1'
-        cls.alignment_ref_2 = '23970/7/1'
-        cls.sample_set_ref = '23970/8/1'
-        cls.old_alignment_set_ref = '23970/9/1'
-        cls.new_alignment_set_ref = '23970/16/1'
-
-        return
 
         # upload genome object
         genbank_file_name = 'minimal.gbff'
