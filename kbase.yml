@@ -2,14 +2,13 @@ module-name:
     kb_QualiMap
 
 module-description:
-    A KBase module
+    A KBase module for running QualiMap on ReadsAlignments and ReadsAlignmentSets
 
 service-language:
     python
 
 module-version:
-    0.0.1
+    1.0.0
 
 owners:
     [msneddon]
-
