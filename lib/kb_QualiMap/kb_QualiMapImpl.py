@@ -60,7 +60,7 @@ class kb_QualiMap:
         # ctx is the context object
         # return variables are: result
         #BEGIN run_bamqc
-        qmr = QualiMapRunner(self.scratch_dir, self.callback_url, self.workspace_url)
+        qmr = QualiMapRunner(self.scratch_dir, self.callback_url, self.workspace_url, self.srv_wiz_url)
         result = qmr.run_app(params)
         #END run_bamqc
 

@@ -20,6 +20,7 @@ from kb_QualiMap.authclient import KBaseAuth as _KBaseAuth
 from GenomeFileUtil.GenomeFileUtilClient import GenomeFileUtil
 from ReadsUtils.ReadsUtilsClient import ReadsUtils
 from ReadsAlignmentUtils.ReadsAlignmentUtilsClient import ReadsAlignmentUtils
+from SetAPI.SetAPIServiceClient import SetAPI
 from DataFileUtil.DataFileUtilClient import DataFileUtil
 
 
@@ -53,6 +54,7 @@ class kb_QualiMapTest(unittest.TestCase):
         cls.ws = Workspace(cls.wsURL)
         cls.serviceImpl = kb_QualiMap(cls.cfg)
         cls.scratch = cls.cfg['scratch']
+        cls.srv_wiz_url = cls.cfg['srv-wiz-url']
         cls.callback_url = os.environ['SDK_CALLBACK_URL']
 
         cls.gfu = GenomeFileUtil(cls.callback_url)
@@ -84,6 +86,9 @@ class kb_QualiMapTest(unittest.TestCase):
         cls.alignment_ref_1 = '23970/6/1'
         cls.alignment_ref_2 = '23970/7/1'
         cls.sample_set_ref = '23970/8/1'
+        cls.old_alignment_set_ref = '23970/9/1'
+        cls.new_alignment_set_ref = '23970/16/1'
+
         return
 
         # upload genome object
@@ -196,7 +201,21 @@ class kb_QualiMapTest(unittest.TestCase):
         }
 
         dfu_oi = cls.dfu.save_objects(save_object_params)[0]
-        cls.alignment_set_ref = str(dfu_oi[6]) + '/' + str(dfu_oi[0]) + '/' + str(dfu_oi[4])
+        cls.old_alignment_set_ref = str(dfu_oi[6]) + '/' + str(dfu_oi[0]) + '/' + str(dfu_oi[4])
+        print('TEST (legacy) KBaseRNASeq.alignment_set_ref=' + cls.old_alignment_set_ref)
+
+        # Save the alignment set
+        items = [{'ref': cls.alignment_ref_1, 'label': 'c1'}, {'ref': cls.alignment_ref_2, 'label': 'c2'}]
+        alignment_set_data = {'description': '', 'items': items}
+        alignment_set_save_params = {'data': alignment_set_data,
+                                     'workspace': cls.wsName,
+                                     'output_object_name': 'MyReadsAlignmentSet'}
+
+        set_api = SetAPI(cls.srv_wiz_url)
+        save_result = set_api.save_reads_alignment_set_v1(alignment_set_save_params)
+        cls.new_alignment_set_ref = save_result['set_ref']
+        print('TEST KBaseSet.alignment_set_ref=')
+        print(cls.new_alignment_set_ref)
 
     def getWsClient(self):
         return self.__class__.wsClient
@@ -210,8 +229,8 @@ class kb_QualiMapTest(unittest.TestCase):
     def getContext(self):
         return self.__class__.ctx
 
-    def test_basic(self):
-
+    def test_single(self):
+        return
         params = {
             'input_ref': self.alignment_ref_1,
             'create_report': 1,
@@ -219,9 +238,34 @@ class kb_QualiMapTest(unittest.TestCase):
         }
         result = self.getImpl().run_bamqc(self.getContext(), params)[0]
         pprint(result)
+        self.assertIn('qc_result_folder_path', result)
+        self.assertIn('qc_result_zip_info', result)
+        self.assertIn('shock_id', result['qc_result_zip_info'])
+        self.assertIn('report_name', result)
+        self.assertIn('report_ref', result)
 
-        #params = {
-        #    'input_ref': self.alignment_ref_1
-        #}
-        #result = self.getImpl().run_bamqc(self.getContext(), params)[0]
-        #pprint(result)
+    def test_multi_no_report(self):
+        params = {
+            'input_ref': self.new_alignment_set_ref
+        }
+        result = self.getImpl().run_bamqc(self.getContext(), params)[0]
+        pprint(result)
+        self.assertIn('qc_result_folder_path', result)
+        self.assertIn('qc_result_zip_info', result)
+        self.assertIn('shock_id', result['qc_result_zip_info'])
+        self.assertNotIn('report_name', result)
+        self.assertNotIn('report_ref', result)
+
+    def test_multi(self):
+        params = {
+            'input_ref': self.new_alignment_set_ref,
+            'create_report': 1,
+            'output_workspace': self.getWsName()
+        }
+        result = self.getImpl().run_bamqc(self.getContext(), params)[0]
+        pprint(result)
+        self.assertIn('qc_result_folder_path', result)
+        self.assertIn('qc_result_zip_info', result)
+        self.assertIn('shock_id', result['qc_result_zip_info'])
+        self.assertIn('report_name', result)
+        self.assertIn('report_ref', result)

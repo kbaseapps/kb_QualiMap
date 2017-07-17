@@ -7,6 +7,7 @@ from pprint import pprint
 
 from Workspace.WorkspaceClient import Workspace
 from ReadsAlignmentUtils.ReadsAlignmentUtilsClient import ReadsAlignmentUtils
+from SetAPI.SetAPIServiceClient import SetAPI
 from KBaseReport.KBaseReportClient import KBaseReport
 from DataFileUtil.DataFileUtilClient import DataFileUtil
 
@@ -15,11 +16,12 @@ class QualiMapRunner:
 
     QUALIMAP_PATH = '/kb/module/qualimap-bin/qualimap'
 
-    def __init__(self, scratch_dir, callback_url, workspace_url):
+    def __init__(self, scratch_dir, callback_url, workspace_url, srv_wiz_url):
         self.scratch_dir = scratch_dir
         self.rau = ReadsAlignmentUtils(callback_url)
         self.kbr = KBaseReport(callback_url)
         self.dfu = DataFileUtil(callback_url)
+        self.set_api = SetAPI(srv_wiz_url)
         self.ws = Workspace(workspace_url)
         self.valid_commands = ['bamqc', 'multi-bamqc']
 
@@ -33,6 +35,8 @@ class QualiMapRunner:
             result = self.run_bamqc(params['input_ref'], run_info['input_info'])
         elif run_info['mode'] == 'multi':
             result = self.run_multi_sample_qc(params['input_ref'], run_info['input_info'])
+        else:
+            raise ValueError('Error in fetching the type to determine run settings.')
 
         if params['create_report']:
             result = self.create_report(result, params['output_workspace'])
@@ -65,35 +69,84 @@ class QualiMapRunner:
         self.run_cli_command('bamqc', options)
 
         package_info = self.package_output_folder(
-            workdir, 'QualiMap_report', 'HTML report directory for QualiMap', 'qualimapReport.html')
+            workdir, 'QualiMap_report', 'HTML report directory for QualiMap BAM QC', 'qualimapReport.html')
 
         return {'qc_result_folder_path': workdir, 'qc_result_zip_info': package_info}
 
     def run_multi_sample_qc(self, input_ref, input_info):
         # download the input and setup a working dir
-        # alignment_ref_list = get_alignment_list(input_ref)
-        # alignment_info_list = download_individual_alignments(alignment_ref_list)
+        reads_alignment_info = self.get_alignments_from_set(input_ref)
         suffix = 'qualimap_' + str(int(time.time() * 10000))
         workdir = os.path.join(self.scratch_dir, suffix)
+        os.makedirs(workdir)
 
-        # create the qualimap simple config file
+        input_file_path = self.create_multi_qualimap_cfg(reads_alignment_info, workdir)
 
-        #options = ['-bam', bam_file_path, '-outdir', workdir, '-outformat', 'html']
-        #self.run_cli_command('bamqc', options)
+        options = ['-d', input_file_path, '-r', '-outdir', workdir, '-outformat', 'html']
+        self.run_cli_command('multi-bamqc', options)
 
-        package_info = None
+        package_info = self.package_output_folder(workdir,
+                                                  'QualiMap_report',
+                                                  'HTML report directory for QualiMap Multi-sample BAM QC',
+                                                  'multisampleBamQcReport.html')
 
         return {'qc_result_folder_path': workdir, 'qc_result_zip_info': package_info}
 
-    def download_individual_alignments(self, alignment_ref_list):
-        pass
+    def get_alignments_from_set(self, alignment_set_ref):
+        set_data = self.set_api.get_reads_alignment_set_v1({'ref': alignment_set_ref, 'include_item_info': 1})
+        items = set_data['data']['items']
+
+        reads_alignment_data = []
+        for alignment in items:
+            alignment_info = self.rau.download_alignment({'source_ref': alignment['ref']})
+            bam_file_path = self.find_my_bam_file(alignment_info['destination_dir'])
+            label = None
+            if 'label' in alignment:
+                label = alignment['label']
+            reads_alignment_data.append({
+                    'bam_file_path': bam_file_path,
+                    'ref': alignment['ref'],
+                    'label': label,
+                    'info': alignment['info']
+                })
+        return reads_alignment_data
+
+    def create_multi_qualimap_cfg(self, reads_alignment_info, workdir):
+        # Group by labels if there is at least one defined
+        use_labels = False
+        for alignment in reads_alignment_info:
+            if alignment['label']:
+                use_labels = True
+                break
+
+        # write the file
+        input_file_path = os.path.join(workdir, 'multi_input.txt')
+        input_file = open(input_file_path, 'w')
+        name_lookup = {}
+        for alignment in reads_alignment_info:
+            name = alignment['info'][1]
+            if name in name_lookup:
+                name_lookup[name] += 1
+                name = name + '_' + name_lookup[name]
+            else:
+                name_lookup[name] = 1
+
+            input_file.write(name + '\t' + alignment['bam_file_path'])
+            if use_labels:
+                if alignment['label']:
+                    input_file.write('\t' + alignment['label'])
+                else:
+                    input_file.write('\tunlabeled')
+            input_file.write('\n')
+        input_file.close()
+        return input_file_path
 
     def get_run_info(self, params):
         info = self.get_obj_info(params['input_ref'])
         obj_type = self.get_type_from_obj_info(info)
         if obj_type in ['KBaseRNASeq.RNASeqAlignment']:
             return {'mode': 'single', 'input_info': info}
-        if obj_type in ['ReadsAlignmentSet']:
+        if obj_type in ['KBaseRNASeq.RNASeqAlignmentSet', 'KBaseSets.ReadsAlignmentSet']:
             return {'mode': 'multi', 'input_info': info}
         raise ValueError('Object type of input_ref is not valid, was: ' + str(obj_type))
 
