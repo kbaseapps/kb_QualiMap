@@ -127,7 +127,7 @@ class QualiMapRunner:
             name = alignment['info'][1]
             if name in name_lookup:
                 name_lookup[name] += 1
-                name = name + '_' + name_lookup[name]
+                name = name + '_' + str(name_lookup[name])
             else:
                 name_lookup[name] = 1
 
