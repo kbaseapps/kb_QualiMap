@@ -1,6 +1,7 @@
 import os
 import time
 import uuid
+import glob
 import subprocess
 
 from pprint import pprint
@@ -75,7 +76,7 @@ class QualiMapRunner:
 
     def run_multi_sample_qc(self, input_ref, input_info):
         # download the input and setup a working dir
-        reads_alignment_info = self.get_alignments_from_set(input_ref)
+        reads_alignment_info = self.get_alignments_from_set(input_ref, input_info)
         suffix = 'qualimap_' + str(int(time.time() * 10000))
         workdir = os.path.join(self.scratch_dir, suffix)
         os.makedirs(workdir)
@@ -92,14 +93,37 @@ class QualiMapRunner:
 
         return {'qc_result_folder_path': workdir, 'qc_result_zip_info': package_info}
 
-    def get_alignments_from_set(self, alignment_set_ref):
-        set_data = self.set_api.get_reads_alignment_set_v1({'ref': alignment_set_ref, 'include_item_info': 1})
-        items = set_data['data']['items']
+    def get_alignments_from_set(self, alignment_set_ref, alignment_set_info):
+
+        obj_type = self.get_type_from_obj_info(alignment_set_info)
+        if obj_type in ['KBaseSets.ReadsAlignmentSet']:
+            set_data = self.set_api.get_reads_alignment_set_v1({'ref': alignment_set_ref, 'include_item_info': 1})
+            items = set_data['data']['items']
+        elif obj_type in ['KBaseRNASeq.RNASeqAlignmentSet']:
+            alignmentset_obj = self.ws.get_objects2(
+                {'objects':
+                     [{'ref': alignment_set_ref}]})['data'][0]
+            """
+            Add info of each alignment object to align_item and add it to items list
+            """
+            items = list()
+            align_item = dict()
+            for alignment_ref in alignmentset_obj['data']['sample_alignments']:
+                align_item .clear()
+                align_item['ref'] = alignment_ref
+                alignment_obj = self.ws.get_objects2(
+                    {'objects':
+                         [{'ref': alignment_ref}]})['data'][0]
+                align_item['info'] = alignment_obj['info']
+                items.append(align_item)
+        else:
+            # type checking done already, should not get here
+            raise ValueError('Object type of input_ref is not valid, was: ' + str(obj_type))
 
         reads_alignment_data = []
         for alignment in items:
             alignment_info = self.rau.download_alignment({'source_ref': alignment['ref']})
-            bam_file_path = self.find_my_bam_file(alignment_info['destination_dir'])
+            bam_file_path = self.find_bam_file(alignment_info['destination_dir'])
             label = None
             if 'label' in alignment:
                 label = alignment['label']
@@ -182,17 +206,17 @@ class QualiMapRunner:
             raise ValueError('Error running command: ' + ' '.join(command) + '\n' +
                              'Exit Code: ' + str(exitCode))
 
-    def find_my_bam_file(self, dirpath):
-        bam_path = None
-        for f in os.listdir(dirpath):
-            fullpath = os.path.join(dirpath, f)
-            if os.path.isfile(fullpath) and f.lower().endswith('.bam'):
-                if bam_path is not None:
-                    raise ValueError('Error! Too many BAM files were downloaded for this alignment!')
-                bam_path = fullpath
-        if bam_path is None:
-            raise ValueError('Error! No BAM files were downloaded for this alignment!')
-        return bam_path
+    def find_bam_file(self, dirpath):
+        allbamfiles = glob.glob(dirpath + '/*.[Bb][Aa][Mm]')
+        if len(allbamfiles) == 0:
+            raise ValueError('bam file does not exist in {}'.format(dirpath))
+        if len(allbamfiles) == 1:
+            bamfile = allbamfiles[0]
+        elif len(allbamfiles) > 1:
+            bamfile = os.path.join(dirpath + '/accepted_hits.bam')
+            if not os.path.exists(bamfile):
+                raise ValueError('{} does not exist'.format(bamfile))
+        return bamfile
 
     def package_output_folder(self, folder_path, zip_file_name, zip_file_description, index_html_file):
         ''' Simple utility for packaging a folder and saving to shock '''

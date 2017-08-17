@@ -242,9 +242,42 @@ class kb_QualiMapTest(unittest.TestCase):
         self.assertNotIn('report_name', result)
         self.assertNotIn('report_ref', result)
 
-    def test_multi(self):
+    def test_multi_kbasesets_alignmentset(self):
         params = {
             'input_ref': self.new_alignment_set_ref,
+            'create_report': 1,
+            'output_workspace': self.getWsName()
+        }
+        result = self.getImpl().run_bamqc(self.getContext(), params)[0]
+        pprint(result)
+        self.assertIn('qc_result_folder_path', result)
+        self.assertIn('qc_result_zip_info', result)
+        self.assertIn('shock_id', result['qc_result_zip_info'])
+        self.assertIn('report_name', result)
+        self.assertIn('report_ref', result)
+
+    def test_multi_rnaseq_alignmentset(self):
+        params = {
+            'input_ref': self.old_alignment_set_ref,
+            'create_report': 1,
+            'output_workspace': self.getWsName()
+        }
+        result = self.getImpl().run_bamqc(self.getContext(), params)[0]
+        pprint(result)
+        self.assertIn('qc_result_folder_path', result)
+        self.assertIn('qc_result_zip_info', result)
+        self.assertIn('shock_id', result['qc_result_zip_info'])
+        self.assertIn('report_name', result)
+        self.assertIn('report_ref', result)
+
+    @unittest.skip("skipped test_multi_narrative_ref")
+    def test_multi_narrative_ref(self):
+        ci_RNASeqAlignmentSet = '19647/12/1'
+        ci_ReadsAlignmentSet = '19647/8/2'
+        appdev_ReadsAlignmentSet = '6919/33/1'
+
+        params = {
+            'input_ref': ci_RNASeqAlignmentSet,
             'create_report': 1,
             'output_workspace': self.getWsName()
         }
