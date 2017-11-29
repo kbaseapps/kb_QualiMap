@@ -5,6 +5,8 @@ name     : Run QualiMap v2.2.1 to assess Reads Alignment Quality
 tooltip  : |
     Display QC information about a Reads Alignment or set of Reads Alignments
 
+icon: qualimap-cyan.png
+
 screenshots :
     []
 
