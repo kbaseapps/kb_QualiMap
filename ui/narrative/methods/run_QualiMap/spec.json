@@ -1,7 +1,7 @@
 {
-  "ver" : "1.0.0",
-  "authors" : [ ],
-  "contact" : "help@kbase.us",
+  "ver" : "1.0.2",
+  "authors" : [ "msneddon" ],
+  "contact" : "http://kbase.us/contact-us/",
   "visible" : true,
   "categories" : ["active","expression","sequence"],
   "widgets" : {
