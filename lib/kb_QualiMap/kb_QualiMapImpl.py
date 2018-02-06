@@ -21,7 +21,7 @@ class kb_QualiMap:
     # the latter method is running.
     ######################################### noqa
     VERSION = "1.0.2"
-    GIT_URL = "https://ithub.com/kbaseapps/kb_QualiMap"
+    GIT_URL = "https://github.com/kbaseapps/kb_QualiMap"
     GIT_COMMIT_HASH = "0f3c1734eca65e0f494621882f6eae6e6f66085c"
 
     #BEGIN_CLASS_HEADER
