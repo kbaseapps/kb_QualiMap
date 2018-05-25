@@ -146,6 +146,7 @@ class kb_QualiMapTest(unittest.TestCase):
         sample_set_object_name = 'test_Sample_Set'
         sample_set_data = {
                     'sampleset_id': sample_set_object_name,
+                    'sample_ids': [cls.reads_ref_1, cls.reads_ref_2],
                     'sampleset_desc': 'test sampleset object',
                     'Library_type': 'SingleEnd',
                     'condition': [cls.condition_1, cls.condition_2],
