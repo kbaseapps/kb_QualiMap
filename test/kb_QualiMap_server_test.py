@@ -216,7 +216,6 @@ class kb_QualiMapTest(unittest.TestCase):
         return self.__class__.ctx
 
     def test_single(self):
-        return
         params = {
             'input_ref': self.alignment_ref_1,
             'create_report': 1,
