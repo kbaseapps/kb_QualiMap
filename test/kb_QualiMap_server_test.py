@@ -3,6 +3,7 @@ import unittest
 import os
 import shutil
 import time
+from mock import patch
 
 from os import environ
 try:
@@ -15,6 +16,7 @@ from pprint import pprint
 from Workspace.WorkspaceClient import Workspace as Workspace
 from kb_QualiMap.kb_QualiMapImpl import kb_QualiMap
 from kb_QualiMap.kb_QualiMapServer import MethodContext
+from kb_QualiMap.QualiMapRunner import QualiMapRunner
 from kb_QualiMap.authclient import KBaseAuth as _KBaseAuth
 
 from GenomeFileUtil.GenomeFileUtilClient import GenomeFileUtil
@@ -146,6 +148,7 @@ class kb_QualiMapTest(unittest.TestCase):
         sample_set_object_name = 'test_Sample_Set'
         sample_set_data = {
                     'sampleset_id': sample_set_object_name,
+                    'sample_ids': [cls.reads_ref_1, cls.reads_ref_2],
                     'sampleset_desc': 'test sampleset object',
                     'Library_type': 'SingleEnd',
                     'condition': [cls.condition_1, cls.condition_2],
@@ -216,7 +219,6 @@ class kb_QualiMapTest(unittest.TestCase):
         return self.__class__.ctx
 
     def test_single(self):
-        return
         params = {
             'input_ref': self.alignment_ref_1,
             'create_report': 1,
@@ -224,6 +226,23 @@ class kb_QualiMapTest(unittest.TestCase):
         }
         result = self.getImpl().run_bamqc(self.getContext(), params)[0]
         pprint(result)
+        self.assertIn('qc_result_folder_path', result)
+        self.assertIn('qc_result_zip_info', result)
+        self.assertIn('shock_id', result['qc_result_zip_info'])
+        self.assertIn('report_name', result)
+        self.assertIn('report_ref', result)
+
+    @patch.object(QualiMapRunner, "LARGE_BAM_FILE_SIZE", new=1)
+    def test_single_large_file(self):
+        params = {
+            'input_ref': self.alignment_ref_1,
+            'create_report': 1,
+            'output_workspace': self.getWsName()
+        }
+        result = self.getImpl().run_bamqc(self.getContext(), params)[0]
+        pprint(result)
+        # really no good way to assert in large file case
+        # just serach 'Running:' and see if the command has '--java-mem-size=4G'
         self.assertIn('qc_result_folder_path', result)
         self.assertIn('qc_result_zip_info', result)
         self.assertIn('shock_id', result['qc_result_zip_info'])
@@ -250,6 +269,23 @@ class kb_QualiMapTest(unittest.TestCase):
         }
         result = self.getImpl().run_bamqc(self.getContext(), params)[0]
         pprint(result)
+        self.assertIn('qc_result_folder_path', result)
+        self.assertIn('qc_result_zip_info', result)
+        self.assertIn('shock_id', result['qc_result_zip_info'])
+        self.assertIn('report_name', result)
+        self.assertIn('report_ref', result)
+
+    @patch.object(QualiMapRunner, "LARGE_BAM_FILE_SIZE", new=1)
+    def test_multi_large_file(self):
+        params = {
+            'input_ref': self.new_alignment_set_ref,
+            'create_report': 1,
+            'output_workspace': self.getWsName()
+        }
+        result = self.getImpl().run_bamqc(self.getContext(), params)[0]
+        pprint(result)
+        # really no good way to assert in large file case
+        # just serach 'Running:' and see if the command has '--java-mem-size=4G'
         self.assertIn('qc_result_folder_path', result)
         self.assertIn('qc_result_zip_info', result)
         self.assertIn('shock_id', result['qc_result_zip_info'])
