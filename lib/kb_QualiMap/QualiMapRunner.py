@@ -15,7 +15,7 @@ from DataFileUtil.DataFileUtilClient import DataFileUtil
 class QualiMapRunner:
 
     QUALIMAP_PATH = '/kb/module/qualimap-bin/qualimap'
-    JAVA_MEM_DEFAULT_SIZE = '4G'
+    JAVA_MEM_DEFAULT_SIZE = '16G'
     LARGE_BAM_FILE_SIZE = 500 * 1024 * 1024  # 500MB
 
     def _get_file_size(self, file_path):
