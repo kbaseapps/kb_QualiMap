@@ -232,6 +232,24 @@ class kb_QualiMapTest(unittest.TestCase):
         self.assertIn('report_name', result)
         self.assertIn('report_ref', result)
 
+    def run_bamqc_failure(input_ref, input_info):
+        raise ValueError('run_bamqc failed')
+
+    @patch.object(QualiMapRunner, "run_bamqc", side_effect=run_bamqc_failure)
+    def test_single_failure(self, run_bamqc):
+        params = {
+            'input_ref': self.alignment_ref_1,
+            'create_report': 1,
+            'output_workspace': self.getWsName()
+        }
+        result = self.getImpl().run_bamqc(self.getContext(), params)[0]
+        pprint(result)
+        self.assertIsNone(result['qc_result_folder_path'])
+        self.assertIsNone(result['qc_result_zip_info'])
+        self.assertIsNone(result['shock_id'])
+        self.assertIn('report_name', result)
+        self.assertIn('report_ref', result)
+
     @patch.object(QualiMapRunner, "LARGE_BAM_FILE_SIZE", new=1)
     def test_single_large_file(self):
         params = {
@@ -272,6 +290,24 @@ class kb_QualiMapTest(unittest.TestCase):
         self.assertIn('qc_result_folder_path', result)
         self.assertIn('qc_result_zip_info', result)
         self.assertIn('shock_id', result['qc_result_zip_info'])
+        self.assertIn('report_name', result)
+        self.assertIn('report_ref', result)
+
+    def run_multi_sample_qc_failure(input_ref, input_info):
+        raise ValueError('run_multi_sample_qc failed')
+
+    @patch.object(QualiMapRunner, "run_multi_sample_qc", side_effect=run_multi_sample_qc_failure)
+    def test_multi_failure(self, run_multi_sample_qc):
+        params = {
+            'input_ref': self.new_alignment_set_ref,
+            'create_report': 1,
+            'output_workspace': self.getWsName()
+        }
+        result = self.getImpl().run_bamqc(self.getContext(), params)[0]
+        pprint(result)
+        self.assertIsNone(result['qc_result_folder_path'])
+        self.assertIsNone(result['qc_result_zip_info'])
+        self.assertIsNone(result['shock_id'])
         self.assertIn('report_name', result)
         self.assertIn('report_ref', result)
 
