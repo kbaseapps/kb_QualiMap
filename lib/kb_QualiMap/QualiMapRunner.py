@@ -70,7 +70,7 @@ class QualiMapRunner:
             result = {'qc_result_folder_path': None,
                       'qc_result_zip_info': None,
                       'shock_id': None}
-            error_msg = 'Running QualiMap with error:\n{}\n'.format(str(e))
+            error_msg = 'Running QualiMap returned an error:\n{}\n'.format(str(e))
             error_msg += 'Generating simple report instead\n'
             print (error_msg)
 
