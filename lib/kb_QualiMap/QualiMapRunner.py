@@ -56,19 +56,60 @@ class QualiMapRunner:
         pprint(params)
         run_info = self.get_run_info(params)
 
-        if run_info['mode'] == 'single':
-            result = self.run_bamqc(params['input_ref'], run_info['input_info'])
-        elif run_info['mode'] == 'multi':
-            result = self.run_multi_sample_qc(params['input_ref'], run_info['input_info'])
-        else:
+        if run_info.get('mode') not in ['single', 'multi']:
             raise ValueError('Error in fetching the type to determine run settings.')
 
+        run_error = False
+        try:
+            if run_info['mode'] == 'single':
+                result = self.run_bamqc(params['input_ref'], run_info['input_info'])
+            elif run_info['mode'] == 'multi':
+                result = self.run_multi_sample_qc(params['input_ref'], run_info['input_info'])
+        except Exception as e:
+            run_error = True
+            result = {'qc_result_folder_path': None,
+                      'qc_result_zip_info': None,
+                      'shock_id': None}
+            error_msg = 'Running QualiMap returned an error:\n{}\n'.format(str(e))
+            error_msg += 'Generating simple report instead\n'
+            print (error_msg)
+
         if params['create_report']:
-            result = self.create_report(result, params['output_workspace'])
+            result = self.create_report(result, params['output_workspace'],
+                                        run_error, params['input_ref'])
 
         return result
 
-    def create_report(self, result, output_workspace):
+    def create_report(self, result, output_workspace, run_error=None, input_ref=None):
+
+        if run_error:
+            objects_created = []
+            info = self.get_obj_info(input_ref)
+            obj_type = self.get_type_from_obj_info(info)
+            if obj_type in ['KBaseRNASeq.RNASeqAlignment']:
+                objects_created.append({'ref': input_ref,
+                                        'description': 'Alignment'})
+
+            if obj_type in ['KBaseRNASeq.RNASeqAlignmentSet', 'KBaseSets.ReadsAlignmentSet']:
+                objects_created.append({'ref': input_ref,
+                                        'description': 'AlignmentSet'})
+                reads_alignment_info = self.get_alignments_from_set(input_ref)
+                for alignment in reads_alignment_info:
+                    alignment_ref = alignment.get('ref')
+                    objects_created.append({'ref': alignment_ref,
+                                            'description': 'Alignment'})
+
+            report_info = self.kbr.create_extended_report({
+                    'message': '',
+                    'objects_created': objects_created,
+                    'direct_html_link_index': 0,
+                    'report_object_name': 'qualimap_report' + str(uuid.uuid4()),
+                    'workspace_name': output_workspace
+                })
+            result['report_name'] = report_info['name']
+            result['report_ref'] = report_info['ref']
+            return result
+
         qc_result_zip_info = result['qc_result_zip_info']
         report_info = self.kbr.create_extended_report({
             'message': '',
