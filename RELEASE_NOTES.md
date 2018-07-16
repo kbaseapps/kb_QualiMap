@@ -1,6 +1,7 @@
 ### Version 1.0.4
 __Changes__
 - generate a simple report if QauliMap command errors
+- dynamically enlarge QauliMap processing window size
 
 ### Version 1.0.3
 __Changes__
