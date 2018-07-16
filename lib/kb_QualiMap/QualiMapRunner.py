@@ -39,6 +39,8 @@ class QualiMapRunner:
         else:
             multiplier = int(self._get_file_size(file_path)) / int(self.LARGE_BAM_FILE_SIZE)
 
+        print ('setting number of windows multiplier to: {}'.format(multiplier))
+
         return multiplier
 
     def __init__(self, scratch_dir, callback_url, workspace_url, srv_wiz_url):
