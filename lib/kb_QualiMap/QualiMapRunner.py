@@ -136,7 +136,12 @@ class QualiMapRunner:
 
         multiplier = self._large_file(bam_file_path)
         if multiplier:
-            options.append('-nw {}'.format(multiplier * 400))  # increase size of windows
+            window_size = multiplier * 400
+            print ('using larger window size: {} and Java memory: {}'.format(
+                                                                    window_size,
+                                                                    self.JAVA_MEM_DEFAULT_SIZE))
+            print ('using enlarged window size and Java memory')
+            options.append('-nw {}'.format(window_size))  # increase size of windows
             options.append('--java-mem-size={}'.format(self.JAVA_MEM_DEFAULT_SIZE))
         self.run_cli_command('bamqc', options)
 
@@ -158,7 +163,11 @@ class QualiMapRunner:
 
         multiplier = self._large_file(input_file_path)
         if multiplier:
-            options.append('-nw {}'.format(multiplier * 400))  # increase size of windows
+            window_size = multiplier * 400
+            print ('using larger window size: {} and Java memory: {}'.format(
+                                                                    window_size,
+                                                                    self.JAVA_MEM_DEFAULT_SIZE))
+            options.append('-nw {}'.format(window_size))  # increase size of windows
             options.append('--java-mem-size={}'.format(self.JAVA_MEM_DEFAULT_SIZE))
 
         self.run_cli_command('multi-bamqc', options)
