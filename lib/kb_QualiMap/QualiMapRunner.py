@@ -140,7 +140,6 @@ class QualiMapRunner:
             print ('using larger window size: {} and Java memory: {}'.format(
                                                                     window_size,
                                                                     self.JAVA_MEM_DEFAULT_SIZE))
-            print ('using enlarged window size and Java memory')
             options.append('-nw {}'.format(window_size))  # increase size of windows
             options.append('--java-mem-size={}'.format(self.JAVA_MEM_DEFAULT_SIZE))
         self.run_cli_command('bamqc', options)
