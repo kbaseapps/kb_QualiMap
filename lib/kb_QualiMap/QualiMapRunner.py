@@ -24,9 +24,9 @@ class QualiMapRunner:
         return file_size
 
     def _large_file(self, file_path):
-        large_file = False
 
         filename, file_extension = os.path.splitext(file_path)
+        multiplier = 0
 
         if file_extension == '.txt':
             total_file_size = 0
@@ -35,11 +35,13 @@ class QualiMapRunner:
                     bam_file_path = line.split('\t')[1]
                     total_file_size += self._get_file_size(bam_file_path)
             print 'Total file size: {}'.format(total_file_size)
-            large_file = total_file_size > self.LARGE_BAM_FILE_SIZE
+            multiplier = int(total_file_size) / int(self.LARGE_BAM_FILE_SIZE)
         else:
-            large_file = self._get_file_size(file_path) > self.LARGE_BAM_FILE_SIZE
+            multiplier = int(self._get_file_size(file_path)) / int(self.LARGE_BAM_FILE_SIZE)
 
-        return large_file
+        print ('setting number of windows multiplier to: {}'.format(multiplier))
+
+        return multiplier
 
     def __init__(self, scratch_dir, callback_url, workspace_url, srv_wiz_url):
         self.scratch_dir = scratch_dir
@@ -100,9 +102,8 @@ class QualiMapRunner:
                                             'description': 'Alignment'})
 
             report_info = self.kbr.create_extended_report({
-                    'message': '',
+                    'message': 'QualiMap returned an error',
                     'objects_created': objects_created,
-                    'direct_html_link_index': 0,
                     'report_object_name': 'qualimap_report' + str(uuid.uuid4()),
                     'workspace_name': output_workspace
                 })
@@ -132,7 +133,14 @@ class QualiMapRunner:
         workdir = os.path.join(self.scratch_dir, 'qualimap_' + str(int(time.time() * 10000)))
 
         options = ['-bam', bam_file_path, '-outdir', workdir, '-outformat', 'html']
-        if self._large_file(bam_file_path):
+
+        multiplier = self._large_file(bam_file_path)
+        if multiplier:
+            window_size = multiplier * 400
+            print ('using larger window size: {} and Java memory: {}'.format(
+                                                                    window_size,
+                                                                    self.JAVA_MEM_DEFAULT_SIZE))
+            options.append('-nw {}'.format(window_size))  # increase size of windows
             options.append('--java-mem-size={}'.format(self.JAVA_MEM_DEFAULT_SIZE))
         self.run_cli_command('bamqc', options)
 
@@ -151,8 +159,16 @@ class QualiMapRunner:
         input_file_path = self.create_multi_qualimap_cfg(reads_alignment_info, workdir)
 
         options = ['-d', input_file_path, '-r', '-outdir', workdir, '-outformat', 'html']
-        if self._large_file(input_file_path):
+
+        multiplier = self._large_file(input_file_path)
+        if multiplier:
+            window_size = multiplier * 400
+            print ('using larger window size: {} and Java memory: {}'.format(
+                                                                    window_size,
+                                                                    self.JAVA_MEM_DEFAULT_SIZE))
+            options.append('-nw {}'.format(window_size))  # increase size of windows
             options.append('--java-mem-size={}'.format(self.JAVA_MEM_DEFAULT_SIZE))
+
         self.run_cli_command('multi-bamqc', options)
 
         package_info = self.package_output_folder(workdir,
