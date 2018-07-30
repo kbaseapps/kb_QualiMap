@@ -3,6 +3,7 @@ import time
 import uuid
 import subprocess
 import signal
+import traceback
 
 from pprint import pprint
 
@@ -45,7 +46,8 @@ class QualiMapRunner:
 
         return multiplier
 
-    def _timeout_handler(signum, frame):
+    def _timeout_handler(self, signum, frame):
+        print 'Signal handler called with signal', signum
         raise ValueError('QualiMap takes too long')
 
     def __init__(self, scratch_dir, callback_url, workspace_url, srv_wiz_url):
@@ -80,7 +82,8 @@ class QualiMapRunner:
             result = {'qc_result_folder_path': None,
                       'qc_result_zip_info': None,
                       'shock_id': None}
-            error_msg = 'Running QualiMap returned an error:\n{}\n'.format(str(e))
+            error_msg = 'Running QualiMap returned an error:\n{}\n'.format(
+                                                                    traceback.format_exc())
             error_msg += 'Generating simple report instead\n'
             print (error_msg)
 
