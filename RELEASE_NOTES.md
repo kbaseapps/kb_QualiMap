@@ -1,3 +1,8 @@
+
+### Version 1.0.5
+__Changes__
+- Added a timeout threshold. Defaults to 60 minutes.
+
 ### Version 1.0.4
 __Changes__
 - generate a simple report if QauliMap command errors
