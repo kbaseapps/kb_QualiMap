@@ -2,6 +2,7 @@ import os
 import time
 import uuid
 import subprocess
+import signal
 
 from pprint import pprint
 
@@ -17,6 +18,7 @@ class QualiMapRunner:
     QUALIMAP_PATH = '/kb/module/qualimap-bin/qualimap'
     JAVA_MEM_DEFAULT_SIZE = '16G'
     LARGE_BAM_FILE_SIZE = 500 * 1024 * 1024  # 500MB
+    TIMEOUT = 60 * 60  # 60 minutes
 
     def _get_file_size(self, file_path):
         file_size = os.path.getsize(file_path)
@@ -43,6 +45,9 @@ class QualiMapRunner:
 
         return multiplier
 
+    def _timeout_handler(signum, frame):
+        raise ValueError('QualiMap takes too long')
+
     def __init__(self, scratch_dir, callback_url, workspace_url, srv_wiz_url):
         self.scratch_dir = scratch_dir
         self.rau = ReadsAlignmentUtils(callback_url)
@@ -63,10 +68,13 @@ class QualiMapRunner:
 
         run_error = False
         try:
+            signal.signal(signal.SIGALRM, self._timeout_handler)
+            signal.alarm(self.TIMEOUT)
             if run_info['mode'] == 'single':
                 result = self.run_bamqc(params['input_ref'], run_info['input_info'])
             elif run_info['mode'] == 'multi':
                 result = self.run_multi_sample_qc(params['input_ref'], run_info['input_info'])
+            signal.alarm(0)
         except Exception as e:
             run_error = True
             result = {'qc_result_folder_path': None,

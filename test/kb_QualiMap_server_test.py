@@ -267,6 +267,21 @@ class kb_QualiMapTest(unittest.TestCase):
         self.assertIn('report_name', result)
         self.assertIn('report_ref', result)
 
+    @patch.object(QualiMapRunner, "TIMEOUT", new=1)
+    def test_single_file_timeout(self):
+        params = {
+            'input_ref': self.alignment_ref_1,
+            'create_report': 1,
+            'output_workspace': self.getWsName()
+        }
+        result = self.getImpl().run_bamqc(self.getContext(), params)[0]
+        pprint(result)
+        self.assertIsNone(result['qc_result_folder_path'])
+        self.assertIsNone(result['qc_result_zip_info'])
+        self.assertIsNone(result['shock_id'])
+        self.assertIn('report_name', result)
+        self.assertIn('report_ref', result)
+
     def test_multi_no_report(self):
         params = {
             'input_ref': self.new_alignment_set_ref
@@ -325,5 +340,20 @@ class kb_QualiMapTest(unittest.TestCase):
         self.assertIn('qc_result_folder_path', result)
         self.assertIn('qc_result_zip_info', result)
         self.assertIn('shock_id', result['qc_result_zip_info'])
+        self.assertIn('report_name', result)
+        self.assertIn('report_ref', result)
+
+    @patch.object(QualiMapRunner, "TIMEOUT", new=1)
+    def test_multi_timeout(self):
+        params = {
+            'input_ref': self.new_alignment_set_ref,
+            'create_report': 1,
+            'output_workspace': self.getWsName()
+        }
+        result = self.getImpl().run_bamqc(self.getContext(), params)[0]
+        pprint(result)
+        self.assertIsNone(result['qc_result_folder_path'])
+        self.assertIsNone(result['qc_result_zip_info'])
+        self.assertIsNone(result['shock_id'])
         self.assertIn('report_name', result)
         self.assertIn('report_ref', result)
