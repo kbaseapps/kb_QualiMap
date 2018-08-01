@@ -232,128 +232,128 @@ class kb_QualiMapTest(unittest.TestCase):
         self.assertIn('report_name', result)
         self.assertIn('report_ref', result)
 
-    # def run_bamqc_failure(input_ref, input_info):
-    #     raise ValueError('run_bamqc failed')
+    def run_bamqc_failure(input_ref, input_info):
+        raise ValueError('run_bamqc failed')
 
-    # @patch.object(QualiMapRunner, "run_bamqc", side_effect=run_bamqc_failure)
-    # def test_single_failure(self, run_bamqc):
-    #     params = {
-    #         'input_ref': self.alignment_ref_1,
-    #         'create_report': 1,
-    #         'output_workspace': self.getWsName()
-    #     }
-    #     result = self.getImpl().run_bamqc(self.getContext(), params)[0]
-    #     pprint(result)
-    #     self.assertIn('qc_result_folder_path', result)
-    #     self.assertIsNone(result['qc_result_zip_info'])
-    #     self.assertIsNone(result['shock_id'])
-    #     self.assertIn('report_name', result)
-    #     self.assertIn('report_ref', result)
+    @patch.object(QualiMapRunner, "run_bamqc", side_effect=run_bamqc_failure)
+    def test_single_failure(self, run_bamqc):
+        params = {
+            'input_ref': self.alignment_ref_1,
+            'create_report': 1,
+            'output_workspace': self.getWsName()
+        }
+        result = self.getImpl().run_bamqc(self.getContext(), params)[0]
+        pprint(result)
+        self.assertIn('qc_result_folder_path', result)
+        self.assertIsNone(result['qc_result_zip_info'])
+        self.assertIsNone(result['shock_id'])
+        self.assertIn('report_name', result)
+        self.assertIn('report_ref', result)
 
-    # @patch.object(QualiMapRunner, "LARGE_BAM_FILE_SIZE", new=1)
-    # def test_single_large_file(self):
-    #     params = {
-    #         'input_ref': self.alignment_ref_1,
-    #         'create_report': 1,
-    #         'output_workspace': self.getWsName()
-    #     }
-    #     result = self.getImpl().run_bamqc(self.getContext(), params)[0]
-    #     pprint(result)
-    #     # really no good way to assert in large file case
-    #     # just serach 'Running:' and see if the command has '--java-mem-size=4G'
-    #     self.assertIn('qc_result_folder_path', result)
-    #     self.assertIn('qc_result_zip_info', result)
-    #     self.assertIn('shock_id', result['qc_result_zip_info'])
-    #     self.assertIn('report_name', result)
-    #     self.assertIn('report_ref', result)
+    @patch.object(QualiMapRunner, "LARGE_BAM_FILE_SIZE", new=1)
+    def test_single_large_file(self):
+        params = {
+            'input_ref': self.alignment_ref_1,
+            'create_report': 1,
+            'output_workspace': self.getWsName()
+        }
+        result = self.getImpl().run_bamqc(self.getContext(), params)[0]
+        pprint(result)
+        # really no good way to assert in large file case
+        # just serach 'Running:' and see if the command has '--java-mem-size=4G'
+        self.assertIn('qc_result_folder_path', result)
+        self.assertIn('qc_result_zip_info', result)
+        self.assertIn('shock_id', result['qc_result_zip_info'])
+        self.assertIn('report_name', result)
+        self.assertIn('report_ref', result)
 
-    # @patch.object(QualiMapRunner, "TIMEOUT", new=1)
-    # def test_single_file_timeout(self):
-    #     params = {
-    #         'input_ref': self.alignment_ref_1,
-    #         'create_report': 1,
-    #         'output_workspace': self.getWsName()
-    #     }
-    #     result = self.getImpl().run_bamqc(self.getContext(), params)[0]
-    #     pprint(result)
-    #     self.assertIn('qc_result_folder_path', result)
-    #     self.assertIsNone(result['qc_result_zip_info'])
-    #     self.assertIsNone(result['shock_id'])
-    #     self.assertIn('report_name', result)
-    #     self.assertIn('report_ref', result)
+    @patch.object(QualiMapRunner, "TIMEOUT", new=1)
+    def test_single_file_timeout(self):
+        params = {
+            'input_ref': self.alignment_ref_1,
+            'create_report': 1,
+            'output_workspace': self.getWsName()
+        }
+        result = self.getImpl().run_bamqc(self.getContext(), params)[0]
+        pprint(result)
+        self.assertIn('qc_result_folder_path', result)
+        self.assertIsNone(result['qc_result_zip_info'])
+        self.assertIsNone(result['shock_id'])
+        self.assertIn('report_name', result)
+        self.assertIn('report_ref', result)
 
-    # def test_multi_no_report(self):
-    #     params = {
-    #         'input_ref': self.new_alignment_set_ref
-    #     }
-    #     result = self.getImpl().run_bamqc(self.getContext(), params)[0]
-    #     pprint(result)
-    #     self.assertIn('qc_result_folder_path', result)
-    #     self.assertIn('qc_result_zip_info', result)
-    #     self.assertIn('shock_id', result['qc_result_zip_info'])
-    #     self.assertNotIn('report_name', result)
-    #     self.assertNotIn('report_ref', result)
+    def test_multi_no_report(self):
+        params = {
+            'input_ref': self.new_alignment_set_ref
+        }
+        result = self.getImpl().run_bamqc(self.getContext(), params)[0]
+        pprint(result)
+        self.assertIn('qc_result_folder_path', result)
+        self.assertIn('qc_result_zip_info', result)
+        self.assertIn('shock_id', result['qc_result_zip_info'])
+        self.assertNotIn('report_name', result)
+        self.assertNotIn('report_ref', result)
 
-    # def test_multi(self):
-    #     params = {
-    #         'input_ref': self.new_alignment_set_ref,
-    #         'create_report': 1,
-    #         'output_workspace': self.getWsName()
-    #     }
-    #     result = self.getImpl().run_bamqc(self.getContext(), params)[0]
-    #     pprint(result)
-    #     self.assertIn('qc_result_folder_path', result)
-    #     self.assertIn('qc_result_zip_info', result)
-    #     self.assertIn('shock_id', result['qc_result_zip_info'])
-    #     self.assertIn('report_name', result)
-    #     self.assertIn('report_ref', result)
+    def test_multi(self):
+        params = {
+            'input_ref': self.new_alignment_set_ref,
+            'create_report': 1,
+            'output_workspace': self.getWsName()
+        }
+        result = self.getImpl().run_bamqc(self.getContext(), params)[0]
+        pprint(result)
+        self.assertIn('qc_result_folder_path', result)
+        self.assertIn('qc_result_zip_info', result)
+        self.assertIn('shock_id', result['qc_result_zip_info'])
+        self.assertIn('report_name', result)
+        self.assertIn('report_ref', result)
 
-    # def run_multi_sample_qc_failure(input_ref, input_info):
-    #     raise ValueError('run_multi_sample_qc failed')
+    def run_multi_sample_qc_failure(input_ref, input_info):
+        raise ValueError('run_multi_sample_qc failed')
 
-    # @patch.object(QualiMapRunner, "run_multi_sample_qc", side_effect=run_multi_sample_qc_failure)
-    # def test_multi_failure(self, run_multi_sample_qc):
-    #     params = {
-    #         'input_ref': self.new_alignment_set_ref,
-    #         'create_report': 1,
-    #         'output_workspace': self.getWsName()
-    #     }
-    #     result = self.getImpl().run_bamqc(self.getContext(), params)[0]
-    #     pprint(result)
-    #     self.assertIn('qc_result_folder_path', result)
-    #     self.assertIsNone(result['qc_result_zip_info'])
-    #     self.assertIsNone(result['shock_id'])
-    #     self.assertIn('report_name', result)
-    #     self.assertIn('report_ref', result)
+    @patch.object(QualiMapRunner, "run_multi_sample_qc", side_effect=run_multi_sample_qc_failure)
+    def test_multi_failure(self, run_multi_sample_qc):
+        params = {
+            'input_ref': self.new_alignment_set_ref,
+            'create_report': 1,
+            'output_workspace': self.getWsName()
+        }
+        result = self.getImpl().run_bamqc(self.getContext(), params)[0]
+        pprint(result)
+        self.assertIn('qc_result_folder_path', result)
+        self.assertIsNone(result['qc_result_zip_info'])
+        self.assertIsNone(result['shock_id'])
+        self.assertIn('report_name', result)
+        self.assertIn('report_ref', result)
 
-    # @patch.object(QualiMapRunner, "LARGE_BAM_FILE_SIZE", new=1)
-    # def test_multi_large_file(self):
-    #     params = {
-    #         'input_ref': self.new_alignment_set_ref,
-    #         'create_report': 1,
-    #         'output_workspace': self.getWsName()
-    #     }
-    #     result = self.getImpl().run_bamqc(self.getContext(), params)[0]
-    #     pprint(result)
-    #     # really no good way to assert in large file case
-    #     # just serach 'Running:' and see if the command has '--java-mem-size=4G'
-    #     self.assertIn('qc_result_folder_path', result)
-    #     self.assertIn('qc_result_zip_info', result)
-    #     self.assertIn('shock_id', result['qc_result_zip_info'])
-    #     self.assertIn('report_name', result)
-    #     self.assertIn('report_ref', result)
+    @patch.object(QualiMapRunner, "LARGE_BAM_FILE_SIZE", new=1)
+    def test_multi_large_file(self):
+        params = {
+            'input_ref': self.new_alignment_set_ref,
+            'create_report': 1,
+            'output_workspace': self.getWsName()
+        }
+        result = self.getImpl().run_bamqc(self.getContext(), params)[0]
+        pprint(result)
+        # really no good way to assert in large file case
+        # just serach 'Running:' and see if the command has '--java-mem-size=4G'
+        self.assertIn('qc_result_folder_path', result)
+        self.assertIn('qc_result_zip_info', result)
+        self.assertIn('shock_id', result['qc_result_zip_info'])
+        self.assertIn('report_name', result)
+        self.assertIn('report_ref', result)
 
-    # @patch.object(QualiMapRunner, "TIMEOUT", new=1)
-    # def test_multi_timeout(self):
-    #     params = {
-    #         'input_ref': self.new_alignment_set_ref,
-    #         'create_report': 1,
-    #         'output_workspace': self.getWsName()
-    #     }
-    #     result = self.getImpl().run_bamqc(self.getContext(), params)[0]
-    #     pprint(result)
-    #     self.assertIn('qc_result_folder_path', result)
-    #     self.assertIsNone(result['qc_result_zip_info'])
-    #     self.assertIsNone(result['shock_id'])
-    #     self.assertIn('report_name', result)
-    #     self.assertIn('report_ref', result)
+    @patch.object(QualiMapRunner, "TIMEOUT", new=1)
+    def test_multi_timeout(self):
+        params = {
+            'input_ref': self.new_alignment_set_ref,
+            'create_report': 1,
+            'output_workspace': self.getWsName()
+        }
+        result = self.getImpl().run_bamqc(self.getContext(), params)[0]
+        pprint(result)
+        self.assertIn('qc_result_folder_path', result)
+        self.assertIsNone(result['qc_result_zip_info'])
+        self.assertIsNone(result['shock_id'])
+        self.assertIn('report_name', result)
+        self.assertIn('report_ref', result)
