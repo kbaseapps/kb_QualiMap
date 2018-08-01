@@ -91,6 +91,19 @@ class kb_QualiMapTest(unittest.TestCase):
                                                     })['genome_ref']
         print('TEST genome_ref=' + cls.genome_ref)
 
+
+        cls.genome_data = json.load(open('data/genome.json'))
+        info = cls.dfu.save_objects({
+            "id": cls.wsId,
+            "objects": [{
+                "type": "KBaseGenomes.Genome",
+                "data": cls.cond_set,
+                "name": "test_Genome"
+            }]
+        })[0]
+
+        cls.genome_ref = "%s/%s/%s" % (info[6], info[0], info[4])
+
         # upload reads object
         reads_file_name = 'Sample1.fastq'
         reads_file_path = os.path.join(cls.scratch, reads_file_name)
@@ -115,7 +128,7 @@ class kb_QualiMapTest(unittest.TestCase):
         print('TEST reads_ref_2=' + cls.reads_ref_2)
 
         # upload alignment object
-        alignment_file_name = 'accepted_hits.bam'
+        alignment_file_name = 'merged_hits.bam'
         alignment_file_path = os.path.join(cls.scratch, alignment_file_name)
         shutil.copy(os.path.join('data', alignment_file_name), alignment_file_path)
 
