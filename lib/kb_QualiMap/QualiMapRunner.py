@@ -84,7 +84,7 @@ class QualiMapRunner:
             os.makedirs(workdir)
 
             with open(os.path.join(workdir, 'qualimapReport.html'), 'w') as report:
-                report.write('<html><body><p>QualiMap returned an error</p></body></html>')
+                report.write('<html><body><p></p></body></html>')
 
             result = {'qc_result_folder_path': workdir,
                       'qc_result_zip_info': None,
