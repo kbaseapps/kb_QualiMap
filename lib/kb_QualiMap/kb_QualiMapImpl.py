@@ -20,9 +20,9 @@ class kb_QualiMap:
     # state. A method could easily clobber the state set by another while
     # the latter method is running.
     ######################################### noqa
-    VERSION = "1.0.4"
+    VERSION = "1.0.6"
     GIT_URL = "git@github.com:Tianhao-Gu/kb_QualiMap.git"
-    GIT_COMMIT_HASH = "4955d40ef3bb37551a602bcc80891eb2c9539255"
+    GIT_COMMIT_HASH = "5e65692f9f5da876d76f5c3e8cf2dadf3053a729"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER

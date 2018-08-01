@@ -244,7 +244,7 @@ class kb_QualiMapTest(unittest.TestCase):
         }
         result = self.getImpl().run_bamqc(self.getContext(), params)[0]
         pprint(result)
-        self.assertIsNone(result['qc_result_folder_path'])
+        self.assertIn('qc_result_folder_path', result)
         self.assertIsNone(result['qc_result_zip_info'])
         self.assertIsNone(result['shock_id'])
         self.assertIn('report_name', result)
@@ -276,7 +276,7 @@ class kb_QualiMapTest(unittest.TestCase):
         }
         result = self.getImpl().run_bamqc(self.getContext(), params)[0]
         pprint(result)
-        self.assertIsNone(result['qc_result_folder_path'])
+        self.assertIn('qc_result_folder_path', result)
         self.assertIsNone(result['qc_result_zip_info'])
         self.assertIsNone(result['shock_id'])
         self.assertIn('report_name', result)
@@ -320,7 +320,7 @@ class kb_QualiMapTest(unittest.TestCase):
         }
         result = self.getImpl().run_bamqc(self.getContext(), params)[0]
         pprint(result)
-        self.assertIsNone(result['qc_result_folder_path'])
+        self.assertIn('qc_result_folder_path', result)
         self.assertIsNone(result['qc_result_zip_info'])
         self.assertIsNone(result['shock_id'])
         self.assertIn('report_name', result)
@@ -352,7 +352,7 @@ class kb_QualiMapTest(unittest.TestCase):
         }
         result = self.getImpl().run_bamqc(self.getContext(), params)[0]
         pprint(result)
-        self.assertIsNone(result['qc_result_folder_path'])
+        self.assertIn('qc_result_folder_path', result)
         self.assertIsNone(result['qc_result_zip_info'])
         self.assertIsNone(result['shock_id'])
         self.assertIn('report_name', result)

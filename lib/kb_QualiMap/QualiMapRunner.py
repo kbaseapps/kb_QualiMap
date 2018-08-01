@@ -77,9 +77,16 @@ class QualiMapRunner:
             elif run_info['mode'] == 'multi':
                 result = self.run_multi_sample_qc(params['input_ref'], run_info['input_info'])
             signal.alarm(0)
-        except Exception as e:
+        except Exception:
             run_error = True
-            result = {'qc_result_folder_path': None,
+
+            workdir = os.path.join(self.scratch_dir, 'qualimap_' + str(int(time.time() * 10000)))
+            os.makedirs(workdir)
+
+            with open(os.path.join(workdir, 'qualimapReport.html'), 'w') as report:
+                report.write('<html><body><p>QualiMap returned an error</p></body></html>')
+
+            result = {'qc_result_folder_path': workdir,
                       'qc_result_zip_info': None,
                       'shock_id': None}
             error_msg = 'Running QualiMap returned an error:\n{}\n'.format(
