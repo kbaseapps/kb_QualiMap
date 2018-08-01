@@ -4,6 +4,7 @@ import os
 import shutil
 import time
 from mock import patch
+import json
 
 from os import environ
 try:
@@ -80,29 +81,20 @@ class kb_QualiMapTest(unittest.TestCase):
     def prepare_data(cls):
 
         # upload genome object
-        genbank_file_name = 'minimal.gbff'
-        genbank_file_path = os.path.join(cls.scratch, genbank_file_name)
-        shutil.copy(os.path.join('data', genbank_file_name), genbank_file_path)
-
-        genome_object_name = 'test_Genome'
-        cls.genome_ref = cls.gfu.genbank_to_genome({'file': {'path': genbank_file_path},
-                                                    'workspace_name': cls.wsName,
-                                                    'genome_name': genome_object_name
-                                                    })['genome_ref']
-        print('TEST genome_ref=' + cls.genome_ref)
-
+        workspace_id = cls.dfu.ws_name_to_id(cls.wsName)
 
         cls.genome_data = json.load(open('data/genome.json'))
         info = cls.dfu.save_objects({
-            "id": cls.wsId,
+            "id": workspace_id,
             "objects": [{
                 "type": "KBaseGenomes.Genome",
-                "data": cls.cond_set,
+                "data": cls.genome_data,
                 "name": "test_Genome"
             }]
         })[0]
 
         cls.genome_ref = "%s/%s/%s" % (info[6], info[0], info[4])
+        print('TEST genome_ref=' + cls.genome_ref)
 
         # upload reads object
         reads_file_name = 'Sample1.fastq'
@@ -157,7 +149,7 @@ class kb_QualiMapTest(unittest.TestCase):
         print('TEST alignment_ref_2=' + cls.alignment_ref_2)
 
         # upload sample_set object
-        workspace_id = cls.dfu.ws_name_to_id(cls.wsName)
+        
         sample_set_object_name = 'test_Sample_Set'
         sample_set_data = {
                     'sampleset_id': sample_set_object_name,
