@@ -12,6 +12,7 @@ from ReadsAlignmentUtils.ReadsAlignmentUtilsClient import ReadsAlignmentUtils
 from SetAPI.SetAPIServiceClient import SetAPI
 from KBaseReport.KBaseReportClient import KBaseReport
 from DataFileUtil.DataFileUtilClient import DataFileUtil
+from GenomeFileUtil.GenomeFileUtilClient import GenomeFileUtil
 
 
 class QualiMapRunner:
@@ -23,7 +24,7 @@ class QualiMapRunner:
 
     def _get_file_size(self, file_path):
         file_size = os.path.getsize(file_path)
-        print 'File size: {} -- {}'.format(file_size, file_path)
+        print('File size: {} -- {}'.format(file_size, file_path))
         return file_size
 
     def _large_file(self, file_path):
@@ -37,7 +38,7 @@ class QualiMapRunner:
                 for line in f:
                     bam_file_path = line.split('\t')[1]
                     total_file_size += self._get_file_size(bam_file_path)
-            print 'Total file size: {}'.format(total_file_size)
+            print('Total file size: {}'.format(total_file_size))
             multiplier = int(total_file_size) / int(self.LARGE_BAM_FILE_SIZE)
         else:
             multiplier = int(self._get_file_size(file_path)) / int(self.LARGE_BAM_FILE_SIZE)
@@ -47,7 +48,7 @@ class QualiMapRunner:
         return multiplier
 
     def _timeout_handler(self, signum, frame):
-        print 'Signal handler called with signal', signum
+        print('Signal handler called with signal', signum)
         raise ValueError('QualiMap takes too long')
 
     def __init__(self, scratch_dir, callback_url, workspace_url, srv_wiz_url):
@@ -55,6 +56,7 @@ class QualiMapRunner:
         self.rau = ReadsAlignmentUtils(callback_url)
         self.kbr = KBaseReport(callback_url)
         self.dfu = DataFileUtil(callback_url)
+        self.gfu = GenomeFileUtil(callback_url)
         self.set_api = SetAPI(srv_wiz_url)
         self.ws = Workspace(workspace_url)
         self.valid_commands = ['bamqc', 'multi-bamqc']
@@ -144,13 +146,41 @@ class QualiMapRunner:
         result['report_ref'] = report_info['ref']
         return result
 
+    def get_gtf_file(self, input_ref, set_op=False):
+
+        print('Start fetching GFF file from genome')
+
+        if set_op:
+            set_data = self.set_api.get_reads_alignment_set_v1({'ref': input_ref,
+                                                                'include_item_info': 1})
+            input_ref = set_data['data']['items'][0]['ref']
+
+        obj_data = self.dfu.get_objects(
+            {"object_refs": [input_ref]})['data'][0]['data']
+
+        genome_ref = obj_data.get('genome_id')
+
+        if not genome_ref:
+            raise ValueError('Alignment is not associated with a Genome object')
+
+        result_directory = os.path.join(self.scratch_dir, str(uuid.uuid4()))
+        os.makedirs(result_directory)
+
+        genome_gtf_file = self.gfu.genome_to_gff({'genome_ref': genome_ref,
+                                                  'is_gtf': True,
+                                                  'target_dir': result_directory})['file_path']
+
+        return genome_gtf_file
+
     def run_bamqc(self, input_ref, input_info):
         # download the input and setup a working dir
         alignment_info = self.rau.download_alignment({'source_ref': input_ref})
         bam_file_path = self.find_my_bam_file(alignment_info['destination_dir'])
+        gtf_file = self.get_gtf_file(input_ref)
         workdir = os.path.join(self.scratch_dir, 'qualimap_' + str(int(time.time() * 10000)))
 
-        options = ['-bam', bam_file_path, '-outdir', workdir, '-outformat', 'html']
+        options = ['-bam', bam_file_path, '-c', '-outdir', workdir, '-outformat', 'html',
+                   '-gff', gtf_file]
 
         multiplier = self._large_file(bam_file_path)
         if multiplier:
@@ -170,13 +200,15 @@ class QualiMapRunner:
     def run_multi_sample_qc(self, input_ref, input_info):
         # download the input and setup a working dir
         reads_alignment_info = self.get_alignments_from_set(input_ref)
+        gtf_file = self.get_gtf_file(input_ref, set_op=True)
         suffix = 'qualimap_' + str(int(time.time() * 10000))
         workdir = os.path.join(self.scratch_dir, suffix)
         os.makedirs(workdir)
 
         input_file_path = self.create_multi_qualimap_cfg(reads_alignment_info, workdir)
 
-        options = ['-d', input_file_path, '-r', '-outdir', workdir, '-outformat', 'html']
+        options = ['-d', input_file_path, '-r', '-c', '-outdir', workdir, '-outformat', 'html',
+                   '-gff', gtf_file]
 
         multiplier = self._large_file(input_file_path)
         if multiplier:
