@@ -19,8 +19,8 @@ class QualiMapRunner:
 
     QUALIMAP_PATH = '/kb/module/qualimap-bin/qualimap'
     JAVA_MEM_DEFAULT_SIZE = '16G'
-    LARGE_BAM_FILE_SIZE = 500 * 1024 * 1024  # 500MB
-    TIMEOUT = 60 * 60  # 60 minutes
+    LARGE_BAM_FILE_SIZE = 3 * 1024 * 1024 * 1024  # 3GB
+    TIMEOUT = 2 * 60 * 60  # 2 hours
 
     def _get_file_size(self, file_path):
         file_size = os.path.getsize(file_path)
@@ -122,7 +122,7 @@ class QualiMapRunner:
                                             'description': 'Alignment'})
 
             report_info = self.kbr.create_extended_report({
-                    'message': 'QualiMap returned an error',
+                    'message': ' ',
                     'objects_created': objects_created,
                     'report_object_name': 'qualimap_report' + str(uuid.uuid4()),
                     'workspace_name': output_workspace
