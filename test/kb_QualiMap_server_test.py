@@ -80,22 +80,20 @@ class kb_QualiMapTest(unittest.TestCase):
     @classmethod
     def prepare_data(cls):
 
-        # upload genome object
         workspace_id = cls.dfu.ws_name_to_id(cls.wsName)
 
-        cls.genome_data = json.load(open('data/genome.json'))
-        info = cls.dfu.save_objects({
-            "id": workspace_id,
-            "objects": [{
-                "type": "KBaseGenomes.Genome",
-                "data": cls.genome_data,
-                "name": "test_Genome"
-            }]
-        })[0]
+        # upload genome object
+        genbank_file_name = 'minimal.gbff'
+        genbank_file_path = os.path.join(cls.scratch, genbank_file_name)
+        shutil.copy(os.path.join('data', genbank_file_name), genbank_file_path)
 
-        cls.genome_ref = "%s/%s/%s" % (info[6], info[0], info[4])
+        genome_object_name = 'test_Genome'
+        cls.genome_ref = cls.gfu.genbank_to_genome({'file': {'path': genbank_file_path},
+                                                    'workspace_name': cls.wsName,
+                                                    'genome_name': genome_object_name
+                                                    })['genome_ref']
         print('TEST genome_ref=' + cls.genome_ref)
-
+        
         # upload reads object
         reads_file_name = 'Sample1.fastq'
         reads_file_path = os.path.join(cls.scratch, reads_file_name)
@@ -120,7 +118,7 @@ class kb_QualiMapTest(unittest.TestCase):
         print('TEST reads_ref_2=' + cls.reads_ref_2)
 
         # upload alignment object
-        alignment_file_name = 'merged_hits.bam'
+        alignment_file_name = 'accepted_hits.bam'
         alignment_file_path = os.path.join(cls.scratch, alignment_file_name)
         shutil.copy(os.path.join('data', alignment_file_name), alignment_file_path)
 
