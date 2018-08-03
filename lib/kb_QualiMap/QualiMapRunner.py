@@ -19,8 +19,8 @@ class QualiMapRunner:
 
     QUALIMAP_PATH = '/kb/module/qualimap-bin/qualimap'
     JAVA_MEM_DEFAULT_SIZE = '16G'
-    LARGE_BAM_FILE_SIZE = 3 * 1024 * 1024 * 1024  # 3GB
-    TIMEOUT = 2 * 60 * 60  # 2 hours
+    LARGE_BAM_FILE_SIZE = 5 * 1024 * 1024 * 1024  # 5GB
+    TIMEOUT = 5 * 60 * 60  # 5 hours
 
     def _get_file_size(self, file_path):
         file_size = os.path.getsize(file_path)
@@ -182,6 +182,7 @@ class QualiMapRunner:
         options = ['-bam', bam_file_path, '-c', '-outdir', workdir, '-outformat', 'html',
                    '-gff', gtf_file]
 
+        options.append('--java-mem-size={}'.format(self.JAVA_MEM_DEFAULT_SIZE))  # always use large mem
         multiplier = self._large_file(bam_file_path)
         if multiplier:
             window_size = multiplier * 400
@@ -189,7 +190,7 @@ class QualiMapRunner:
                                                                     window_size,
                                                                     self.JAVA_MEM_DEFAULT_SIZE))
             options.append('-nw {}'.format(window_size))  # increase size of windows
-            options.append('--java-mem-size={}'.format(self.JAVA_MEM_DEFAULT_SIZE))
+
         self.run_cli_command('bamqc', options)
 
         package_info = self.package_output_folder(
