@@ -19,8 +19,8 @@ class QualiMapRunner:
 
     QUALIMAP_PATH = '/kb/module/qualimap-bin/qualimap'
     JAVA_MEM_DEFAULT_SIZE = '16G'
-    LARGE_BAM_FILE_SIZE = 5 * 1024 * 1024 * 1024  # 5GB
-    TIMEOUT = 5 * 60 * 60  # 5 hours
+    LARGE_BAM_FILE_SIZE = 20 * 1024 * 1024 * 1024  # 20 GB
+    TIMEOUT = 72 * 60 * 60  # 72 hours
 
     def _get_file_size(self, file_path):
         file_size = os.path.getsize(file_path)
