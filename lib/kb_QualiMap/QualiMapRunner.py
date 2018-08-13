@@ -176,11 +176,17 @@ class QualiMapRunner:
         # download the input and setup a working dir
         alignment_info = self.rau.download_alignment({'source_ref': input_ref})
         bam_file_path = self.find_my_bam_file(alignment_info['destination_dir'])
-        gtf_file = self.get_gtf_file(input_ref)
+        try:
+            gtf_file = self.get_gtf_file(input_ref)
+        except:
+            gtf_file = ''
+
         workdir = os.path.join(self.scratch_dir, 'qualimap_' + str(int(time.time() * 10000)))
 
-        options = ['-bam', bam_file_path, '-c', '-outdir', workdir, '-outformat', 'html',
-                   '-gff', gtf_file]
+        options = ['-bam', bam_file_path, '-c', '-outdir', workdir, '-outformat', 'html']
+
+        if gtf_file:
+            options += ['-gff', gtf_file]
 
         options.append('--java-mem-size={}'.format(self.JAVA_MEM_DEFAULT_SIZE))  # always use large mem
         multiplier = self._large_file(bam_file_path)
@@ -201,15 +207,20 @@ class QualiMapRunner:
     def run_multi_sample_qc(self, input_ref, input_info):
         # download the input and setup a working dir
         reads_alignment_info = self.get_alignments_from_set(input_ref)
-        gtf_file = self.get_gtf_file(input_ref, set_op=True)
+        try:
+            gtf_file = self.get_gtf_file(input_ref, set_op=True)
+        except:
+            gtf_file = ''
         suffix = 'qualimap_' + str(int(time.time() * 10000))
         workdir = os.path.join(self.scratch_dir, suffix)
         os.makedirs(workdir)
 
         input_file_path = self.create_multi_qualimap_cfg(reads_alignment_info, workdir)
 
-        options = ['-d', input_file_path, '-r', '-c', '-outdir', workdir, '-outformat', 'html',
-                   '-gff', gtf_file]
+        options = ['-d', input_file_path, '-r', '-c', '-outdir', workdir, '-outformat', 'html']
+
+        if gtf_file:
+            options += ['-gff', gtf_file]
 
         multiplier = self._large_file(input_file_path)
         if multiplier:
