@@ -25,6 +25,7 @@ from ReadsUtils.ReadsUtilsClient import ReadsUtils
 from ReadsAlignmentUtils.ReadsAlignmentUtilsClient import ReadsAlignmentUtils
 from SetAPI.SetAPIServiceClient import SetAPI
 from DataFileUtil.DataFileUtilClient import DataFileUtil
+from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
 
 
 class kb_QualiMapTest(unittest.TestCase):
@@ -64,6 +65,7 @@ class kb_QualiMapTest(unittest.TestCase):
         cls.dfu = DataFileUtil(cls.callback_url)
         cls.ru = ReadsUtils(cls.callback_url)
         cls.rau = ReadsAlignmentUtils(cls.callback_url)
+        cls.au = AssemblyUtil(cls.callback_url)
 
         suffix = int(time.time() * 1000)
         cls.wsName = "test_kb_qualimap_" + str(suffix)
@@ -93,7 +95,18 @@ class kb_QualiMapTest(unittest.TestCase):
                                                     'genome_name': genome_object_name
                                                     })['genome_ref']
         print('TEST genome_ref=' + cls.genome_ref)
-        
+
+        # upload assembly object
+        file_name = 'test.fna'
+        fasta_path = os.path.join(cls.scratch, file_name)
+        shutil.copy(os.path.join('data', file_name), fasta_path)
+        assembly_name = 'test_assembly'
+        cls.assembly_ref = cls.au.save_assembly_from_fasta({'file': {'path': fasta_path},
+                                                            'workspace_name': cls.wsName,
+                                                            'assembly_name': assembly_name})
+
+        print('TEST assembly_ref=' + cls.assembly_ref)
+
         # upload reads object
         reads_file_name = 'Sample1.fastq'
         reads_file_path = os.path.join(cls.scratch, reads_file_name)
@@ -146,8 +159,20 @@ class kb_QualiMapTest(unittest.TestCase):
                                     })['obj_ref']
         print('TEST alignment_ref_2=' + cls.alignment_ref_2)
 
+        alignment_object_name_3 = 'test_Alignment_3'
+        cls.condition_3 = 'test_condition_3'
+        cls.alignment_ref_3 = cls.rau.upload_alignment(
+                                   {'file_path': alignment_file_path,
+                                    'destination_ref': cls.wsName + '/' + alignment_object_name_3,
+                                    'read_library_ref': cls.reads_ref_2,
+                                    'condition':  cls.condition_3,
+                                    'library_type': 'single_end',
+                                    'assembly_or_genome_ref': cls.assembly_ref
+                                    })['obj_ref']
+        print('TEST alignment_ref_3=' + cls.alignment_ref_3)
+
         # upload sample_set object
-        
+
         sample_set_object_name = 'test_Sample_Set'
         sample_set_data = {
                     'sampleset_id': sample_set_object_name,
@@ -224,6 +249,20 @@ class kb_QualiMapTest(unittest.TestCase):
     def test_single(self):
         params = {
             'input_ref': self.alignment_ref_1,
+            'create_report': 1,
+            'output_workspace': self.getWsName()
+        }
+        result = self.getImpl().run_bamqc(self.getContext(), params)[0]
+        pprint(result)
+        self.assertIn('qc_result_folder_path', result)
+        self.assertIn('qc_result_zip_info', result)
+        self.assertIn('shock_id', result['qc_result_zip_info'])
+        self.assertIn('report_name', result)
+        self.assertIn('report_ref', result)
+
+    def test_single_with_assembly(self):
+        params = {
+            'input_ref': self.alignment_ref_3,
             'create_report': 1,
             'output_workspace': self.getWsName()
         }
