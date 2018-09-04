@@ -88,8 +88,13 @@ class QualiMapRunner:
             with open(os.path.join(workdir, 'qualimapReport.html'), 'w') as report:
                 report.write('<html><body><p></p></body></html>')
 
+            package_info = self.package_output_folder(
+                                                    workdir, 'QualiMap_report',
+                                                    'EMPTY HTML report directory for QualiMap BAM QC',
+                                                    'qualimapReport.html')
+
             result = {'qc_result_folder_path': workdir,
-                      'qc_result_zip_info': None,
+                      'qc_result_zip_info': package_info,
                       'shock_id': None}
             error_msg = 'Running QualiMap returned an error:\n{}\n'.format(
                                                                     traceback.format_exc())
