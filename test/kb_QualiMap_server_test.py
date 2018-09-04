@@ -287,8 +287,8 @@ class kb_QualiMapTest(unittest.TestCase):
         result = self.getImpl().run_bamqc(self.getContext(), params)[0]
         pprint(result)
         self.assertIn('qc_result_folder_path', result)
-        self.assertIsNone(result['qc_result_zip_info'])
-        self.assertIsNone(result['shock_id'])
+        self.assertIn('qc_result_zip_info', result)
+        self.assertIn('shock_id', result['qc_result_zip_info'])
         self.assertIn('report_name', result)
         self.assertIn('report_ref', result)
 
@@ -319,8 +319,8 @@ class kb_QualiMapTest(unittest.TestCase):
         result = self.getImpl().run_bamqc(self.getContext(), params)[0]
         pprint(result)
         self.assertIn('qc_result_folder_path', result)
-        self.assertIsNone(result['qc_result_zip_info'])
-        self.assertIsNone(result['shock_id'])
+        self.assertIn('qc_result_zip_info', result)
+        self.assertIn('shock_id', result['qc_result_zip_info'])
         self.assertIn('report_name', result)
         self.assertIn('report_ref', result)
 
@@ -363,8 +363,8 @@ class kb_QualiMapTest(unittest.TestCase):
         result = self.getImpl().run_bamqc(self.getContext(), params)[0]
         pprint(result)
         self.assertIn('qc_result_folder_path', result)
-        self.assertIsNone(result['qc_result_zip_info'])
-        self.assertIsNone(result['shock_id'])
+        self.assertIn('qc_result_zip_info', result)
+        self.assertIn('shock_id', result['qc_result_zip_info'])
         self.assertIn('report_name', result)
         self.assertIn('report_ref', result)
 
@@ -395,7 +395,7 @@ class kb_QualiMapTest(unittest.TestCase):
         result = self.getImpl().run_bamqc(self.getContext(), params)[0]
         pprint(result)
         self.assertIn('qc_result_folder_path', result)
-        self.assertIsNone(result['qc_result_zip_info'])
-        self.assertIsNone(result['shock_id'])
+        self.assertIn('qc_result_zip_info', result)
+        self.assertIn('shock_id', result['qc_result_zip_info'])
         self.assertIn('report_name', result)
         self.assertIn('report_ref', result)
