@@ -37,7 +37,7 @@ RUN chmod -R a+rw /kb/module
 # using 2.2.2-dev due to incorrect total reads count
 # https://groups.google.com/forum/#!topic/qualimap/boCICeLA_OM
 RUN cd /kb/module && \
-    wget https://bitbucket.org/kokonech/qualimap/downloads/qualimap-build-10-10-16.tar.gz && \
+    wget https://bitbucket.org/kokonech/qualimap/downloads/qualimap-build-26-08-18.tar.gz && \
     tar -xzf qualimap-build-10-10-16.tar.gz && \
     rm -rf qualimap-build-10-10-16.tar.gz && \
     mv qualimap-build-10-10-16 qualimap-bin
