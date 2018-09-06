@@ -38,9 +38,9 @@ RUN chmod -R a+rw /kb/module
 # https://groups.google.com/forum/#!topic/qualimap/boCICeLA_OM
 RUN cd /kb/module && \
     wget https://bitbucket.org/kokonech/qualimap/downloads/qualimap-build-26-08-18.tar.gz && \
-    tar -xzf qualimap-build-10-10-16.tar.gz && \
-    rm -rf qualimap-build-10-10-16.tar.gz && \
-    mv qualimap-build-10-10-16 qualimap-bin
+    tar -xzf qualimap-build-26-08-18.tar.gz && \
+    rm -rf qualimap-build-26-08-18.tar.gz && \
+    mv qualimap-build-26-08-18 qualimap-bin
 
 # copy in sdk module files
 COPY ./ /kb/module
