@@ -38,5 +38,5 @@ description : |
 publications :
     -
         display-text: |
-            Konstantin Okonechnikov, Ana Conesa and Fernando García-Alcalde "Qualimap 2: advanced multi-sample quality control for high-throughput sequencing data." Bioinformatics (2015)
+            Okonechnikov K, Conesa A, García-Alcalde F. Qualimap 2: advanced multi-sample quality control for high-throughput sequencing data. Bioinformatics. 2016;32: 292–294. doi:10.1093/bioinformatics/btv566
         link: https://www.ncbi.nlm.nih.gov/pubmed/26428292
