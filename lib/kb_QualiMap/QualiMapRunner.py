@@ -1,18 +1,17 @@
 import os
-import time
-import uuid
-import subprocess
 import signal
+import subprocess
+import time
 import traceback
-
+import uuid
 from pprint import pprint
 
-from Workspace.WorkspaceClient import Workspace
-from ReadsAlignmentUtils.ReadsAlignmentUtilsClient import ReadsAlignmentUtils
-from SetAPI.SetAPIServiceClient import SetAPI
-from KBaseReport.KBaseReportClient import KBaseReport
-from DataFileUtil.DataFileUtilClient import DataFileUtil
-from GenomeFileUtil.GenomeFileUtilClient import GenomeFileUtil
+from installed_clients.DataFileUtilClient import DataFileUtil
+from installed_clients.GenomeFileUtilClient import GenomeFileUtil
+from installed_clients.KBaseReportClient import KBaseReport
+from installed_clients.ReadsAlignmentUtilsClient import ReadsAlignmentUtils
+from installed_clients.SetAPIServiceClient import SetAPI
+from installed_clients.WorkspaceClient import Workspace
 
 
 class QualiMapRunner:
@@ -39,9 +38,9 @@ class QualiMapRunner:
                     bam_file_path = line.split('\t')[1]
                     total_file_size += self._get_file_size(bam_file_path)
             print('Total file size: {}'.format(total_file_size))
-            multiplier = int(total_file_size) / int(self.LARGE_BAM_FILE_SIZE)
+            multiplier = int(total_file_size) // int(self.LARGE_BAM_FILE_SIZE)
         else:
-            multiplier = int(self._get_file_size(file_path)) / int(self.LARGE_BAM_FILE_SIZE)
+            multiplier = int(self._get_file_size(file_path)) // int(self.LARGE_BAM_FILE_SIZE)
 
         print ('setting number of windows multiplier to: {}'.format(multiplier))
 
@@ -197,9 +196,8 @@ class QualiMapRunner:
         multiplier = self._large_file(bam_file_path)
         if multiplier:
             window_size = multiplier * 400
-            print ('using larger window size: {} and Java memory: {}'.format(
-                                                                    window_size,
-                                                                    self.JAVA_MEM_DEFAULT_SIZE))
+            print(f'using larger window size: {window_size} and Java memory: '
+                  f'{self.JAVA_MEM_DEFAULT_SIZE}')
             options.append('-nw {}'.format(window_size))  # increase size of windows
 
         self.run_cli_command('bamqc', options)
@@ -230,11 +228,10 @@ class QualiMapRunner:
         multiplier = self._large_file(input_file_path)
         if multiplier:
             window_size = multiplier * 400
-            print ('using larger window size: {} and Java memory: {}'.format(
-                                                                    window_size,
-                                                                    self.JAVA_MEM_DEFAULT_SIZE))
-            options.append('-nw {}'.format(window_size))  # increase size of windows
-            options.append('--java-mem-size={}'.format(self.JAVA_MEM_DEFAULT_SIZE))
+            print(f'using larger window size: {window_size} and Java memory: '
+                  f'{self.JAVA_MEM_DEFAULT_SIZE}')
+            options.append(f'-nw {window_size}')  # increase size of windows
+            options.append(f'--java-mem-size={self.JAVA_MEM_DEFAULT_SIZE}')
 
         self.run_cli_command('multi-bamqc', options)
 
@@ -329,7 +326,7 @@ class QualiMapRunner:
         p = subprocess.Popen(command, cwd=cwd, shell=False)
         exitCode = p.wait()
 
-        if (exitCode == 0):
+        if exitCode == 0:
             print('Success, exit code was: ' + str(exitCode))
         else:
             raise ValueError('Error running command: ' + ' '.join(command) + '\n' +
@@ -348,7 +345,7 @@ class QualiMapRunner:
         return bam_path
 
     def package_output_folder(self, folder_path, zip_file_name, zip_file_description, index_html_file):
-        ''' Simple utility for packaging a folder and saving to shock '''
+        """ Simple utility for packaging a folder and saving to shock """
         output = self.dfu.file_to_shock({'file_path': folder_path,
                                          'make_handle': 0,
                                          'pack': 'zip'})
