@@ -1,31 +1,24 @@
 # -*- coding: utf-8 -*-
-import unittest
 import os
 import shutil
 import time
-from mock import patch
-import json
-
+import unittest
+from configparser import ConfigParser  # py3
 from os import environ
-try:
-    from ConfigParser import ConfigParser  # py2
-except:
-    from configparser import ConfigParser  # py3
-
 from pprint import pprint
+from unittest.mock import patch
 
-from Workspace.WorkspaceClient import Workspace as Workspace
-from kb_QualiMap.kb_QualiMapImpl import kb_QualiMap
-from kb_QualiMap.kb_QualiMapServer import MethodContext
+from installed_clients.AssemblyUtilClient import AssemblyUtil
+from installed_clients.DataFileUtilClient import DataFileUtil
+from installed_clients.GenomeFileUtilClient import GenomeFileUtil
+from installed_clients.ReadsAlignmentUtilsClient import ReadsAlignmentUtils
+from installed_clients.ReadsUtilsClient import ReadsUtils
+from installed_clients.SetAPIServiceClient import SetAPI
+from installed_clients.WorkspaceClient import Workspace
 from kb_QualiMap.QualiMapRunner import QualiMapRunner
 from kb_QualiMap.authclient import KBaseAuth as _KBaseAuth
-
-from GenomeFileUtil.GenomeFileUtilClient import GenomeFileUtil
-from ReadsUtils.ReadsUtilsClient import ReadsUtils
-from ReadsAlignmentUtils.ReadsAlignmentUtilsClient import ReadsAlignmentUtils
-from SetAPI.SetAPIServiceClient import SetAPI
-from DataFileUtil.DataFileUtilClient import DataFileUtil
-from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
+from kb_QualiMap.kb_QualiMapImpl import kb_QualiMap
+from kb_QualiMap.kb_QualiMapServer import MethodContext
 
 
 class kb_QualiMapTest(unittest.TestCase):
@@ -119,7 +112,7 @@ class kb_QualiMapTest(unittest.TestCase):
                                                'interleaved': 0,
                                                'name': reads_object_name_1
                                                })['obj_ref']
-        print('TEST reads_ref_1=' + cls.reads_ref_1)
+        print(('TEST reads_ref_1=' + cls.reads_ref_1))
 
         reads_object_name_2 = 'test_Reads_2'
         cls.reads_ref_2 = cls.ru.upload_reads({'fwd_file': reads_file_path,
@@ -194,7 +187,7 @@ class kb_QualiMapTest(unittest.TestCase):
 
         dfu_oi = cls.dfu.save_objects(save_object_params)[0]
         cls.sample_set_ref = str(dfu_oi[6]) + '/' + str(dfu_oi[0]) + '/' + str(dfu_oi[4])
-        print('TEST sample_set_ref=' + cls.sample_set_ref)
+        print(('TEST sample_set_ref=' + cls.sample_set_ref))
 
         # upload alignment_set object
         object_type = 'KBaseRNASeq.RNASeqAlignmentSet'
