@@ -1,9 +1,9 @@
 #
 # Define basic display information
 #
-name     : Run QualiMap v2.2.1 to assess Reads Alignment Quality
+name     : Assess Reads Alignment Quality using Qualimap - v2.2.1
 tooltip  : |
-    Display QC information about a Reads Alignment or set of Reads Alignments
+    Display BAM quality control information for a ReadsAlignment or ReadsAlignmentSet using QualiMap.
 
 icon: qualimap-cyan.png
 
@@ -28,12 +28,13 @@ method-suggestions :
 parameters :
     input_ref :
         ui-name : |
-            ReadsAlignment or ReadsAlignmentSet
+            ReadsAlignment(Set)
         short-hint : |
-            Select the ReadsAlignment or Set to perform the QC analysis on
+            Select one or more ReadsAlignments to perform the QC analysis on.
 
 description : |
-    <p>This App runs QualiMap 2 to produce QC metrics and plots for your ReadsAlignment data.</p>
+    <p>This App runs QualiMap to produce BAM QC metrics and plots a report for an Alignment(Set).</p>
+    <p>The output report can be downloaded and includes a summary of the number of mapped reads, coverage, GC-content, mapping quality, etc. in tabular format. It also contains various plots such as PCA and coverage histograms to visualize the tabular data.</p>
 
 publications :
     -
