@@ -7,7 +7,8 @@ MAINTAINER KBase Developer
 # installation scripts.
 
 # -----------------------------------------
-RUN apt-get install wget
+RUN apt-get update -y \
+    && apt-get install wget
 RUN mkdir -p /kb/module/work
 RUN chmod -R a+rw /kb/module
 
