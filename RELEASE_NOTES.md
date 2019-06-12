@@ -1,4 +1,8 @@
 
+### Version 1.1.1
+__Changes__
+- Fixed apt-get bug using old url by using apt-get update -y
+
 ### Version 1.0.5
 __Changes__
 - Added a timeout threshold. Defaults to 60 minutes.
