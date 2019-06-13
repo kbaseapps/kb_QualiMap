@@ -27,6 +27,11 @@ RUN cd /kb/module && \
     rm -rf qualimap-build-26-08-18.tar.gz && \
     mv qualimap-build-26-08-18 qualimap-bin
 
+
+# Address a missing library
+#
+RUN sed -i -e '/^assistive_technologies=/s/^/#/' /etc/java-*-openjdk/accessibility.properties
+
 # copy in sdk module files
 COPY ./ /kb/module
 WORKDIR /kb/module
