@@ -1,3 +1,8 @@
+### Version 1.1.2
+__Changes__
+- Fixed multi-bamqc bug returnning empty report due to space in sample labels
+- Fixed app icon not displaying
+- Added github action for auto testing
 
 ### Version 1.1.1
 __Changes__
