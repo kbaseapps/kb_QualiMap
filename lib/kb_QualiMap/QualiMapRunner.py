@@ -42,7 +42,7 @@ class QualiMapRunner:
         else:
             multiplier = int(self._get_file_size(file_path)) // int(self.LARGE_BAM_FILE_SIZE)
 
-        print ('setting number of windows multiplier to: {}'.format(multiplier))
+        print('setting number of windows multiplier to: {}'.format(multiplier))
 
         return multiplier
 
@@ -98,7 +98,7 @@ class QualiMapRunner:
             error_msg = 'Running QualiMap returned an error:\n{}\n'.format(
                                                                     traceback.format_exc())
             error_msg += 'Generating simple report instead\n'
-            print (error_msg)
+            print(error_msg)
 
         if params['create_report']:
             result = self.create_report(result, params['output_workspace'],
@@ -182,7 +182,7 @@ class QualiMapRunner:
         bam_file_path = self.find_my_bam_file(alignment_info['destination_dir'])
         try:
             gtf_file = self.get_gtf_file(input_ref)
-        except:
+        except Exception:
             gtf_file = ''
 
         workdir = os.path.join(self.scratch_dir, 'qualimap_' + str(int(time.time() * 10000)))
@@ -212,7 +212,7 @@ class QualiMapRunner:
         reads_alignment_info = self.get_alignments_from_set(input_ref)
         try:
             gtf_file = self.get_gtf_file(input_ref, set_op=True)
-        except:
+        except Exception:
             gtf_file = ''
         suffix = 'qualimap_' + str(int(time.time() * 10000))
         workdir = os.path.join(self.scratch_dir, suffix)
@@ -253,6 +253,8 @@ class QualiMapRunner:
             label = None
             if 'label' in alignment:
                 label = alignment['label']
+                # remove spacing in label
+                label = '_'.join(label.split(' '))
             reads_alignment_data.append({
                     'bam_file_path': bam_file_path,
                     'ref': alignment['ref'],
@@ -263,6 +265,7 @@ class QualiMapRunner:
 
     def create_multi_qualimap_cfg(self, reads_alignment_info, workdir):
         # Group by labels if there is at least one defined
+        print('reads_alignment_info: {}'.format(reads_alignment_info))
         use_labels = False
         for alignment in reads_alignment_info:
             if alignment['label']:
@@ -271,6 +274,7 @@ class QualiMapRunner:
 
         # write the file
         input_file_path = os.path.join(workdir, 'multi_input.txt')
+        print('Start generating: {}'.format(input_file_path))
         input_file = open(input_file_path, 'w')
         name_lookup = {}
         for alignment in reads_alignment_info:
@@ -289,6 +293,11 @@ class QualiMapRunner:
                     input_file.write('\tunlabeled')
             input_file.write('\n')
         input_file.close()
+
+        with open(input_file_path, 'r') as f:
+            print('Generated: {}'.format(input_file_path))
+            print(f.read())
+
         return input_file_path
 
     def get_run_info(self, params):
